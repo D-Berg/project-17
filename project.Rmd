@@ -1,0 +1,122 @@
+---
+title: "Untitled"
+author: "Daniel"
+date: "23 september 2019"
+output:
+  html_document:
+    df_print: paged
+---
+
+## R Markdown
+
+
+```{r, echo=FALSE}
+
+cars <- read.table("A17-cars-win.dat")
+
+cars
+
+minprice <- cars$V4
+midprice <- cars$V5
+maxprice <- cars$V6
+cmpg <- cars$V7
+hmpg <- cars$V8
+airbags <- cars$V9 # discrete
+drivetrain <- cars$V10 # discrete
+cylinders <- cars$V11 # missing values
+enginesize <- cars$V12
+horsepower <- cars$V13
+rpm <- cars$V14
+enginerev <- cars$V15
+manualtransmissions <- cars$V16 # discrete
+fueltankcap <- cars$V17
+passcap <- cars$V18
+lencar <- cars$V19
+wheelbase <- cars$V20 
+width <- cars$V21
+Uturn <- cars$V22
+rearseatroom <- cars$V23
+luggagecap <- cars$V24 # missing values
+weight <- cars$V25
+domestic <- cars$V26 # discrete
+mpg <- c()
+
+
+
+average <- 0
+
+for (i in 1:length(cmpg)) {
+  average <- (cmpg[i] + hmpg[i])/2
+  mpg <- c(mpg, average)
+}
+
+```
+
+
+```{r, echo=FALSE}
+pairs(~mpg + weight + wheelbase + fueltankcap + passcap + 
+     + enginesize + minprice + rpm)
+
+```
+
+
+```{r, echo=FALSE}
+model <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
+
+
+```
+
+```{r, echo=FALSE}
+
+summary(model)
+plot(model)
+```
+
+```{r, echo=FALSE}
+plot(fitted(model), mpg)
+abline(1,1)
+```
+```{r, echo=FALSE}
+modeldom <- lm(formula = mpg ~ weight + wheelbase + fueltankcap + passcap + 
+    enginerev + enginesize + minprice + rpm + domestic)
+
+summary(modeldom)
+plot(modeldom)
+plot(fitted(modeldom), mpg)
+abline(1,1)
+```
+
+
+```{r, echo=FALSE}
+fitted(model)
+
+
+
+```
+```{r}
+mpg
+
+
+
+```
+
+```{r}
+model3 <- lm(mpg ~ weight + wheelbase + fueltankcap + passcap + 
+    enginerev + enginesize + minprice)
+summary(model3)
+
+```
+
+```{r}
+model4 <- lm(mpg ~ weight + wheelbase + fueltankcap + passcap + 
+    enginerev + enginesize + minprice + domestic)
+summary(model4)
+plot(model4)
+
+```
+
+```{r}
+vif(model4)
+```
+
+
