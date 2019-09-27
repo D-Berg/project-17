@@ -1,0 +1,198 @@
+---
+title: "Untitled"
+author: "Per Idenfeldt, Oliver Grahn Thuna, Daniel Berg, Gabriel Junhager"
+date: "9/25/2019"
+output:
+  html_document: default
+  pdf_document: 
+    latex_engine: lualatex
+---
+
+# Introduktion
+
+# Variabelselektion
+
+Vi börjar med att undersöka data som är icke-kategorisk, annat data undersöks senare.
+
+```{r}
+library(caret)
+library(car)
+library(olsrr)
+library(psych)
+cars <- read.table("A17-cars-lnx.dat")
+```
+
+
+Variabler som helt klart är irrelevanta till bränsleförbrukning utesluts också automatiskt, till och exempel standard på krockkudde.
+```{r}
+manufacturer <- cars$V1
+car_model <- cars$V2
+type <- cars$V3
+minprice <- cars$V4
+midprice <- cars$V5
+maxprice <- cars$V6
+cmpg <- cars$V7
+hmpg <- cars$V8
+airbags <- cars$V9 # discrete
+drivetrain <- cars$V10 # discrete
+cylinders <- cars$V11 # missing values
+enginesize <- cars$V12
+horsepower <- cars$V13
+rpm <- cars$V14
+enginerev <- cars$V15
+manualtransmissions <- cars$V16 # discrete
+fueltankcap <- cars$V17
+passcap <- cars$V18
+lencar <- cars$V19
+wheelbase <- cars$V20 
+width <- cars$V21
+Uturn <- cars$V22
+rearseatroom <- cars$V23
+luggagecap <- cars$V24 # missing values
+weight <- cars$V25
+domestic <- cars$V26 # discrete
+
+cylinders <- as.numeric(cylinders) 
+
+mpg <- (cmpg + hmpg)/2
+
+cars_cleaned = subset(cars, select =-c(1,2,3,9,10,22,23,24,16,7,8,26))
+cars_numeric <- data.matrix(cars_cleaned, rownames.force = NA)
+cars_numeric <- cbind(cars_numeric,mpg)
+
+```
+
+Vektorerna V7 och V8 står för hur många miles man kommer per gallon i stad respektive motorväg. Vi misstänker att vi kommer kunna kombinera dem i en variabel, hur ser de ut om vi plottar dem mot varandra?
+
+```{r}
+
+
+plot(cmpg, hmpg)
+```
+
+*Figur 1: Plot mellan city miles per gallon och highway miles per gallon*
+
+Vi ser en klar linjär trend. Korrelationen som visas nedan verkar också relativt hög.
+
+```{r}
+cor(cmpg,hmpg)
+```
+
+Vi kombinerar helt enkelt dessa variabler istället för att göra en modell åt varje, även fast de kan ha mindre skillnader.
+
+
+Nu gör vi en korrelationsmatris utav dessa numeriska variabler.
+```{r}
+cor(cars_numeric, use = "pairwise.complete.obs")
+```
+
+*Figur 2: Korrelationsmatris på data som endast är numerisk och relevant* 
+
+Vi säger arbiträrt att vi vill testa alla variabler som fick  $|r| < 0.5,$ genom att plotta dem mot mpg. 
+
+```{r}
+badboys <- cars_numeric[1:length(mpg),c(7,10,15)]
+pairs(badboys)
+```
+
+*Figur 3: Plotten av de variablerna som har dålig korrelation med cmpg*
+
+Av denna figur kan vi inte riktigt avgöra om variablerna bör vara med i modellen eller ej, så vi har kvar dem och utför yttligare tester.
+
+## Variabelselektion - forward och backward
+
+```{r}
+model1 <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + cylinders + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
+
+
+summary(model1)
+vif(model1)
+```
+
+Vi ser att bredden på bilen har en väldigt låg signifikans, och högt VIF-värde, så vi testar att ta bort den variabeln ur vår modell. 
+
+```{r}
+
+model2 <- lm(mpg ~ wheelbase + fueltankcap + passcap + 
+    enginerev + minprice + domestic, data = cars)
+summary(model2)
+plot(model2)
+vif(model2)
+```
+
+Vi märker att modellen får betydligt högre säkerhet i skattningarna på några av dess parametrar. Detta är typiskt för problem med multikolinearitet. Det finns fortfarande en viss osäkerhet i vissa parametrar, kan detta lösas genom att även ta bort vikt variablen? Detta kan motiveras genom att vikten av en bil bestäms till en stor del av de variabler som vi redan har med, så det är inte så stor mening med att försöka ha kvar denna variabel eller att kombinera den med någon annan.
+
+
+```{r}
+
+model3 <- lm(mpg ~ wheelbase + fueltankcap + passcap + 
+    enginerev + minprice + domestic, data = cars)
+summary(model3)
+vif(model3)
+```
+
+Enligt våra VIF-värden så har vi inte längre några problem med kolinearitet. Modellen har relativt okej R²-värde, och alla lutningskoefficienter förutom den för domestic har goda t-värden. Detta tyder på att vi inte längre har lika starka multikollinearitet-problem som vi hade tidigare. Vi undersöker residualer och möjliga outliers med nedanstående plottar.
+
+```{r}
+plot(model3)
+
+model3 <- lm(mpg ~ wheelbase + fueltankcap + passcap + 
+    enginerev + minprice + domestic, data = cars)
+summary(model3)
+vif(model3)
+```
+
+
+
+
+```{r}
+cars <- cars[-c(39,42),]
+
+
+
+manufacturer <- cars$V1
+car_model <- cars$V2
+type <- cars$V3
+minprice <- cars$V4
+midprice <- cars$V5
+maxprice <- cars$V6
+cmpg <- cars$V7
+hmpg <- cars$V8
+airbags <- cars$V9 # discrete
+drivetrain <- cars$V10 # discrete
+cylinders <- cars$V11 # missing values
+enginesize <- cars$V12
+horsepower <- cars$V13
+rpm <- cars$V14
+enginerev <- cars$V15
+manualtransmissions <- cars$V16 # discrete
+fueltankcap <- cars$V17
+passcap <- cars$V18
+lencar <- cars$V19
+wheelbase <- cars$V20 
+width <- cars$V21
+Uturn <- cars$V22
+rearseatroom <- cars$V23
+luggagecap <- cars$V24 # missing values
+weight <- cars$V25
+domestic <- cars$V26 # discrete
+
+mpg <- (cmpg + hmpg)/2
+
+
+
+
+model4 <- lm(mpg ~ fueltankcap + passcap + 
+    enginerev + minprice + domestic, data = cars)
+summary(model4)
+vif(model4)
+plot(model4)
+
+
+```
+
+
+# Konstruktion av modell
+
+# Jämförelse av amerikanska - och icke-amerikanska bilar
+
