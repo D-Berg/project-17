@@ -61,19 +61,19 @@ pairs(~mpg + weight + wheelbase + fueltankcap + passcap +
 
 
 ```{r, echo=FALSE}
-model <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
+model1 <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
 
 
 ```
 
 ```{r, echo=FALSE}
 
-summary(model)
-plot(model)
+summary(model1)
+plot(model1)
 ```
 
 ```{r, echo=FALSE}
-plot(fitted(model), mpg)
+plot(fitted(model1), mpg)
 abline(1,1)
 ```
 ```{r, echo=FALSE}
@@ -118,5 +118,71 @@ plot(model4)
 ```{r}
 vif(model4)
 ```
+
+
+```{r}
+model5 <- lm(mpg ~ weight + wheelbase + passcap + 
+    enginerev + enginesize + minprice + domestic)
+summary(model5)
+plot(model5)
+```
+
+```{r}
+vif(model5)
+```
+
+
+```{r}
+model6 <- lm(mpg ~ wheelbase + fueltankcap + passcap + 
+    enginerev + enginesize + minprice + domestic)
+summary(model6)
+plot(model6)
+```
+```{r}
+RMSEP <- function() {
+  N <- length(mpg)
+  MSum <- 0
+  
+  for (i in 1:N){
+    
+    ev <- cars[1,]
+    
+    tempcars <- cars[-c(i),]
+    
+    tempmpg <- (tempcars$V7 + tempcars$V8)/2
+    tempweight <- tempcars$V25
+    tempwheelbase <- tempcars$V20
+    temppasscap <- tempcars$V18
+    tempenginerev <- tempcars$V15
+    tempenginesize <- tempcars$V12
+    tempminprice <- tempcars$V4
+    tempdomestic <- tempcars$V26
+    
+    tempmodel <- lm(tempmpg ~ tempweight + tempwheelbase + temppasscap + 
+    tempenginerev + tempenginesize + tempminprice + tempdomestic)
+    
+    mc <- coefficients(tempmodel)
+    
+    fittedvalue_at_ex <- mc[1] + mc[2]*ev[25] + mc[3]*ev[20] + mc[4]*ev[18] + mc[5]*ev[15] + mc[6]*ev[12] + mc[7]*ev[4] + mc[8]*ev[26]    
+    MSum <- MSum + ((ev[7] + ev[8])/2 - fittedvalue_at_ex)^2
+  }
+  msep <- MSum/N
+  print(msep)
+  print(sqrt(msep))
+}
+
+RMSEP()
+
+ 
+```
+
+```{r}
+modeleq <- mpg ~ wheelbase + fueltankcap + passcap + enginerev + 
+    enginesize + minprice + domestic
+
+model <- lm(formula = modeleq)
+summary(model)
+```
+
 
 
