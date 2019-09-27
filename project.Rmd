@@ -13,7 +13,7 @@ output:
 ```{r, echo=FALSE}
 
 cars <- read.table("A17-cars-win.dat")
-cars <- as.data.frame.matrix(cars)
+cars <- as.data.frame(cars)
 cars
 
 minprice <- cars$V4
@@ -233,6 +233,14 @@ newMSEP(c(4, 19))
 cars[, c(1,26)]
 ```
 ```{r}
-model7 <- lm(mpg ~ cars[c(4,26)])
+model7 <- lm(mpg ~ reformulate(cars[,c(4,26)]), data=cars)
+```
+
+
+
+```{r}
+index <- 80
+cars[80,1]
+
 ```
 
