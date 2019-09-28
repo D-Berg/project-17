@@ -9,10 +9,77 @@ output:
 
 ## R Markdown
 
+```{r}
+MSEP <- function(factors, dt) {
+  sqsum <- 0
+  N <- dim(dt)[1]
+  
+  for (i in 1:N) {
+    
+    excluded_obs <- dt[i,]
+    excluded_mpg <- (excluded_obs[7] + excluded_obs[8])/2
+    if (is.na(excluded_obs[1])== FALSE) {
+      new_dt <- dt
+      new_dt[i,] <- NA
+      
+      
+      manufacturer <- new_dt$manufacturer
+      car_model <- new_dt$model
+      type <- new_dt$type
+      minprice <- new_dt$minprice
+      midprice <- new_dt$midprice
+      maxprice <- new_dt$maxprice
+      cmpg <- new_dt$cmpg
+      hmpg <- new_dt$hmpg
+      airbags <- new_dt$airbags # discrete
+      drivetrain <- new_dt$drivetrain # discrete
+      cylinders <- new_dt$cylinders # missing values
+      enginesize <- new_dt$enginesize
+      horsepower <- new_dt$horsepower
+      rpm <- new_dt$rpm
+      enginerev <- new_dt$enginerev
+      manualtransmissions <- new_dt$manualtransmissions # discrete
+      fueltankcap <- new_dt$fueltankcap
+      passcap <- new_dt$passcap
+      lencar <- new_dt$lencar
+      wheelbase <- new_dt$wheelbase 
+      width <- new_dt$width
+      Uturn <- new_dt$Uturn
+      rearseatroom <- new_dt$rearseatroom
+      luggagecap <- new_dt$luggagecap # missing values
+      weight <- new_dt$weight
+      domestic <- new_dt$domestic # discrete
+      
+      mpg <- (cmpg + hmpg)/2
+      
+      modelform <- as.formula(paste("mpg~", paste(factors, collapse="+")))
+    
+      model <- lm(modelform, data=new_dt, na.action = na.omit)
+  
+      coef <- coefficients(model)
+      
+      est_val <- coef[1]
+      
+      for (j in 1:length(factors)) {
+        est_val <- est_val + coef[j + 1]*excluded_obs[which(colnames(dt)==factors[j])]
+      }
+      
+      sqsum <- sqsum + (excluded_mpg-est_val)^2
+      
+    }
+    
+  }
+  
+  MSEP <- sqsum/N 
+  print(paste("mpg~", paste(factors, collapse="+")))
+  print(MSEP[1,])
+
+}
+```
 
 ```{r, echo=FALSE}
 
-cars <- read.table("A17-cars-win.dat")
+cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "engingesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 cars <- as.data.frame(cars)
 cars
 
@@ -49,6 +116,15 @@ for (i in 1:length(cmpg)) {
   average <- (cmpg[i] + hmpg[i])/2
   mpg <- c(mpg, average)
 }
+
+```
+
+
+```{r}
+MSEP(c("width"), cars)
+MSEP(c("weight","wheelbase","fueltankcap","passcap","enginerev","minprice","domestic"), cars)
+MSEP(c( "wheelbase", "fueltankcap", "passcap",
+    "enginerev","minprice", "domestic"), cars)
 
 ```
 
