@@ -21,7 +21,7 @@ library(caret)
 library(car)
 library(olsrr)
 library(psych)
-cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-lnx.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
@@ -178,19 +178,19 @@ summary(model1)
 vif(model1)
 ```
 
-Vi ser att bredden på bilen har en väldigt låg signifikans, och högt VIF-värde, så vi testar att ta bort den variabeln ur vår modell. 
+Ett VIF-test visar oss att variabeln weight är mycket korrelerad med andra variabler i vår modell. Om man tänker rent praktiskt så är detta mycket logiskt eftersom att vikten av en bil till viss del avgörs av de variablerna som vi redan har vi vår modell. Är det verkligen nödvändigt att ha med denna variabel? Vi tar bort den och betraktar hur modellen ser ut. 
 
 ```{r, echo=FALSE}
 
 model2 <- lm(mpg ~ wheelbase + fueltankcap + passcap + 
-    enginerev + minprice + domestic, data = cars)
+    enginerev + minprice + domestic + width, data = cars)
 summary(model2)
 par(mfrow=c(2,2))
 plot(model2)
 vif(model2)
 ```
 
-Vi märker att modellen får betydligt högre säkerhet i skattningarna på några av dess parametrar. Detta är typiskt för problem med multikolinearitet. Det finns fortfarande en viss osäkerhet i vissa parametrar, kan detta lösas genom att även ta bort vikt variablen? Detta kan motiveras genom att vikten av en bil bestäms till en stor del av de variabler som vi redan har med, så det är inte så stor mening med att försöka ha kvar denna variabel eller att kombinera den med någon annan.
+Vi märker att modellen får betydligt högre säkerhet i skattningarna på några av dess parametrar. Detta är typiskt för problem med multikolinearitet. Det finns fortfarande en viss osäkerhet i vissa parametrar, kan detta lösas genom att även ta bort width variablen? Denna visar också relativt höga VIF-värden och har inte väldigt hög signifikansnivå.
 
 
 ```{r, echo=FALSE}
@@ -201,7 +201,11 @@ summary(model3)
 vif(model3)
 ```
 
-Enligt våra VIF-värden så har vi inte längre några problem med kolinearitet. Modellen har relativt okej R²-värde, och alla lutningskoefficienter förutom den för domestic har goda t-värden. Detta tyder på att vi inte längre har lika starka multikollinearitet-problem som vi hade tidigare. Vi undersöker residualer och möjliga outliers med nedanstående plottar.
+Enligt våra VIF-värden så har vi inte längre några problem med kolinearitet. Modellen har relativt okej R²-värde, och alla lutningskoefficienter förutom den för domestic har goda t-värden. Detta tyder på att vi inte längre har lika starka multikollinearitet-problem som vi hade tidigare. 
+
+**Värt att notera:** Det är egentligen inte viktigt att intercept har hög säkerhet för vår modell. Detta eftersom att det är inte meningsfullt att tänka sig vad en bil med 0 i alla värden har för bränsleförbrukning. I vår modell har denna hypotetiska bil en bränsleförbrukning på 25.23, vilket är mer än vad vi förväntar oss av en bil utan säten eller bränsletank och med 0 rpm. 
+
+Vi undersöker residualer och möjliga outliers med nedanstående plottar.
 
 ```{r, echo=FALSE}
 par(mfrow=c(2,2))
@@ -213,7 +217,13 @@ summary(model3)
 vif(model3)
 ```
 
+Observationerna 39 och 42 ligger precis innanför Cook's distance. När vi tittar på vår QQ-plot så ser vi att även här så orsakar 39 och 42 trubbel, och gör även att variansen för residylerna inte blir lika normalfördelat som det annars skulle vara. 
 
+```{r}
+cars[c(39,42), ]
+```
+
+Ovanför ser vi att dessa observationer är båda små bilar med väldigt höga bränslekostnader, vilket kan ha att göra med dessa specifika modeller. Vi väljer att ta bort dessa outliers och ser om vår modell blir märkbart bättre. 
 
 
 ```{r, echo=FALSE}
@@ -256,10 +266,9 @@ summary(model4)
 vif(model4)
 par(mfrow=c(2,2))
 plot(model4)
-
-
 ```
 
+Residylerna till vår nya modell ser genast mycket bättre ut, och vi får även aningen bättre R²-värde.
 
 # Konstruktion av modell
 
