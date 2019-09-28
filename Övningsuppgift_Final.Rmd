@@ -21,11 +21,11 @@ library(caret)
 library(car)
 library(olsrr)
 library(psych)
-cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "engingesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 MSEP <- function(factors, dt) {
   sqsum <- 0
   N <- dim(dt)[1]
@@ -95,32 +95,32 @@ MSEP <- function(factors, dt) {
 
 Variabler som helt klart är irrelevanta till bränsleförbrukning utesluts också automatiskt, till och exempel standard på krockkudde.
 ```{r, echo=FALSE}
-manufacturer <- cars$V1
-car_model <- cars$V2
-type <- cars$V3
-minprice <- cars$V4
-midprice <- cars$V5
-maxprice <- cars$V6
-cmpg <- cars$V7
-hmpg <- cars$V8
-airbags <- cars$V9 # discrete
-drivetrain <- cars$V10 # discrete
-cylinders <- cars$V11 # missing values
-enginesize <- cars$V12
-horsepower <- cars$V13
-rpm <- cars$V14
-enginerev <- cars$V15
-manualtransmissions <- cars$V16 # discrete
-fueltankcap <- cars$V17
-passcap <- cars$V18
-lencar <- cars$V19
-wheelbase <- cars$V20 
-width <- cars$V21
-Uturn <- cars$V22
-rearseatroom <- cars$V23
-luggagecap <- cars$V24 # missing values
-weight <- cars$V25
-domestic <- cars$V26 # discrete
+manufacturer <- cars$manufacturer
+car_model <- cars$model
+type <- cars$type
+minprice <- cars$minprice
+midprice <- cars$midprice
+maxprice <- cars$maxprice
+cmpg <- cars$cmpg
+hmpg <- cars$hmpg
+airbags <- cars$airbags # discrete
+drivetrain <- cars$drivetrain # discrete
+cylinders <- cars$cylinders # missing values
+enginesize <- cars$enginesize
+horsepower <- cars$horsepower
+rpm <- cars$rpm
+enginerev <- cars$enginerev
+manualtransmissions <- cars$manualtransmissions # discrete
+fueltankcap <- cars$fueltankcap
+passcap <- cars$passcap
+lencar <- cars$lencar
+wheelbase <- cars$wheelbase 
+width <- cars$width
+Uturn <- cars$Uturn
+rearseatroom <- cars$rearseatroom
+luggagecap <- cars$luggagecap # missing values
+weight <- cars$weight
+domestic <- cars$domestic # discrete
 
 cylinders <- as.numeric(cylinders) 
 
@@ -135,8 +135,6 @@ cars_numeric <- cbind(cars_numeric,mpg)
 Vektorerna V7 och V8 står för hur många miles man kommer per gallon i stad respektive motorväg. Vi misstänker att vi kommer kunna kombinera dem i en variabel, hur ser de ut om vi plottar dem mot varandra?
 
 ```{r, echo=FALSE}
-
-
 plot(cmpg, hmpg)
 ```
 
@@ -163,6 +161,7 @@ Vi säger arbiträrt att vi vill testa alla variabler som fick  $|r| < 0.5,$ gen
 ```{r, echo=FALSE}
 badboys <- cars_numeric[1:length(mpg),c(7,10,15)]
 pairs(badboys)
+
 ```
 
 *Figur 3: Plotten av de variablerna som har dålig korrelation med cmpg*
@@ -220,38 +219,35 @@ vif(model3)
 ```{r, echo=FALSE}
 cars <- cars[-c(39,42),]
 
+manufacturer <- cars$manufacturer
+car_model <- cars$model
+type <- cars$type
+minprice <- cars$minprice
+midprice <- cars$midprice
+maxprice <- cars$maxprice
+cmpg <- cars$cmpg
+hmpg <- cars$hmpg
+airbags <- cars$airbags # discrete
+drivetrain <- cars$drivetrain # discrete
+cylinders <- cars$cylinders # missing values
+enginesize <- cars$enginesize
+horsepower <- cars$horsepower
+rpm <- cars$rpm
+enginerev <- cars$enginerev
+manualtransmissions <- cars$manualtransmissions # discrete
+fueltankcap <- cars$fueltankcap
+passcap <- cars$passcap
+lencar <- cars$lencar
+wheelbase <- cars$wheelbase 
+width <- cars$width
+Uturn <- cars$Uturn
+rearseatroom <- cars$rearseatroom
+luggagecap <- cars$luggagecap # missing values
+weight <- cars$weight
+domestic <- cars$domestic # discrete
 
-
-manufacturer <- cars$V1
-car_model <- cars$V2
-type <- cars$V3
-minprice <- cars$V4
-midprice <- cars$V5
-maxprice <- cars$V6
-cmpg <- cars$V7
-hmpg <- cars$V8
-airbags <- cars$V9 # discrete
-drivetrain <- cars$V10 # discrete
-cylinders <- cars$V11 # missing values
-enginesize <- cars$V12
-horsepower <- cars$V13
-rpm <- cars$V14
-enginerev <- cars$V15
-manualtransmissions <- cars$V16 # discrete
-fueltankcap <- cars$V17
-passcap <- cars$V18
-lencar <- cars$V19
-wheelbase <- cars$V20 
-width <- cars$V21
-Uturn <- cars$V22
-rearseatroom <- cars$V23
-luggagecap <- cars$V24 # missing values
-weight <- cars$V25
-domestic <- cars$V26 # discrete
 
 mpg <- (cmpg + hmpg)/2
-
-
 
 
 model4 <- lm(mpg ~ fueltankcap + passcap + 
@@ -269,7 +265,7 @@ plot(model4)
 
 ## MSEP
 
-```{r}
+```{r, echo=FALSE}
 MSEP(c("width"), cars)
 MSEP(c("weight","wheelbase","fueltankcap","passcap","enginerev","minprice","domestic"), cars)
 MSEP(c( "wheelbase", "fueltankcap", "passcap",
