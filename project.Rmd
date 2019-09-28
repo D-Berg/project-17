@@ -79,7 +79,7 @@ MSEP <- function(factors, dt) {
 
 ```{r, echo=FALSE}
 
-cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "engingesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 cars <- as.data.frame(cars)
 cars
 
