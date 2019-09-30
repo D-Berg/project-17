@@ -28,7 +28,7 @@ library(car)
 library(olsrr)
 library(psych)
 library(xtable)
-cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-lnx.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
@@ -369,3 +369,12 @@ Vi har konstruerat en modell med fem variabler från 26 stycken som beskriver br
 
 Formula with dynamic number of variables: 
 https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
+
+# Fördelning av uppgifter
+
+Daniel - Skrivit MSEP för multilineära modeller, utfört backward - och forward step selection samt utfört statistik analys. Hanterade det mesta av kodandet.
+
+Per - Ansvarig för det mesta rapportskrivandet, analyserat data tillsammans med Oliver och Daniel. Plockat bort outliers.
+
+Oliver - Skrev delen om normalfördelningskraven för vår slutgiltiga modell, samt slutsatsen om jämförelse mellan amerikansk mot icke amerikanska bilar. Analyserat data och kommit med förslag.
+
