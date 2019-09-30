@@ -27,7 +27,8 @@ library(caret)
 library(car)
 library(olsrr)
 library(psych)
-cars <- read.table("A17-cars-lnx.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+library(xtable)
+cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
@@ -156,8 +157,8 @@ Vi kombinerar helt enkelt dessa variabler istället för att göra en modell åt
 
 
 Nu gör vi en korrelationsmatris utav dessa numeriska variabler.
-```{r, echo=FALSE}
-cor(cars_numeric, use = "pairwise.complete.obs")
+```{r, echo=FALSE,results="asis"}
+print(xtable(cor(cars_numeric, use = "pairwise.complete.obs")), type = "latex", size="\\fontsize{4pt}{2pt}\\selectfont")
 ```
 
 *Figur 2: Korrelationsmatris på data som endast är numerisk och relevant* 
