@@ -179,16 +179,20 @@ Av denna figur kan vi inte riktigt avgöra om variablerna bör vara med i modell
 
 Eftersom vi har ett stort antal variabler att välja bland för att bygga upp våran modell utför vi både *forward selection* och *backward elimination*. De variabler vi utför detta på omfattar all förutom de kategoriska och de som saknar data i vissa punkter. Vad vi får ut är en modell som har elimenerat ett stort antal av våra förklarande variabler.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 model1 <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + cylinders + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
-
-summary(model1)
 
 ```
 
+```{r, echo=FALSE}
+summary(model1)
+```
+
+
+
 **VIF av den framtagna modellen:**
 
-```{r}
+```{r, echo=FALSE}
 vif(model1)
 ```
 
@@ -233,7 +237,7 @@ vif(model3)
 
 Observationerna 39 och 42 ligger precis innanför Cook's distance. När vi tittar på vår QQ-plot så ser vi att även här så orsakar 39 och 42 trubbel, och gör även att variansen för residylerna inte blir lika normalfördelat som det annars skulle vara. 
 
-```{r}
+```{r, echo=FALSE}
 cars[c(39,42), ]
 ```
 
@@ -301,3 +305,8 @@ MSEP(c( "wheelbase", "fueltankcap", "passcap",
 
 I modell 4 kan vi notera att variabeln "domestic" har ett $p$-värde på $0.39062$. Eftersom detta är baserat på en nollhypotes där koefficienten för domestic antas vara noll så ser vi att koefficientens värde, nämligen $-0.538925$, inte alls är signifikant skilt från noll, förutsatt att alla antaganden för en multilinjär modell är uppfyllda förstås. I detta fal kan vi då av datat dra slutsatsen att bränsleförbrukningen inte påverkas märkbart av att bilen är amerikansk eller inte.
 
+
+
+# Referens 
+
+Formula with dynamic number of variables: https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
