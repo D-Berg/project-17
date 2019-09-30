@@ -28,7 +28,7 @@ library(car)
 library(olsrr)
 library(psych)
 library(xtable)
-cars <- read.table("A17-cars-lnx.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
@@ -173,6 +173,9 @@ pairs(badboys)
 Av denna figur kan vi inte riktigt avgöra om variablerna bör vara med i modellen eller ej, så vi har kvar dem och utför yttligare tester.
 
 ## Variabelselektion - forward och backward
+
+
+Eftersom vi har ett stort antal variabler att välja bland för att bygga upp våran modell utför vi både *forward selection* och *backward elimination* för att konstruera en modell med ett hanterbart antal variabler. De variabler vi utför detta test på omfattar alla förutom de kategoriska och de som saknar data i vissa punkter.
 
 ```{r, echo=FALSE, include = FALSE}
 model1 <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + cylinders + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
