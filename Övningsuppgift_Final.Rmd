@@ -328,6 +328,19 @@ MSEP(c( "wheelbase", "fueltankcap", "passcap",
 
 I modell 4 kan vi notera att variabeln "domestic" har ett $p$-värde på $0.39062$. Eftersom detta är baserat på en nollhypotes där koefficienten för domestic antas vara noll så ser vi att koefficientens värde, nämligen $-0.538925$, inte alls är signifikant skilt från noll, förutsatt att alla antaganden för en multilinjär modell är uppfyllda förstås. I detta fal kan vi då av datat dra slutsatsen att bränsleförbrukningen inte påverkas märkbart av att bilen är amerikansk eller inte.
 
+# Resultat
+
+I sammanfattningen för modell 4, samt tillhörande plot, kan man se att medianen ligger nära noll och att kvartilerna ligger tillfredställande symmetriska omkring medianen. Vid första anblick ser datat lite "böjt" ut men inte tillräckligt för att dra några säkra slutsatser om krökning. För säkerhetens skull kan vi kolla om residualerna är normalfördelade i en plot nedanför. Det ser helt okej ut.
+
+Residualerna verkar bli mer spridda vid prediktioner av större värden av bensinförbrukning, vilket kan indikera heteroskedasticitet, men igen, inte så extremt att vi kan dra säkra slutsatser.
+
+```{r,fig.width= 15 , echo=FALSE}
+par(mfrow=c(1,3))
+plot(model4 , which = c(1,2))
+hist(residuals(model4), breaks = 15)
+summary(model4)
+```
+
 # Referens
 
 Formula with dynamic number of variables: https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
