@@ -28,7 +28,7 @@ library(car)
 library(olsrr)
 library(psych)
 library(xtable)
-cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-lnx.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
@@ -149,16 +149,16 @@ plot(cmpg, hmpg)
 
 Vi ser en klar linjär trend. Korrelationen som visas nedan verkar också relativt hög.
 
-```{r, echo=FALSE}
-cor(cmpg,hmpg)
+```{r, echo=FALSE,results="asis"}
+print(xtable(cor(cars_numeric, use = "pairwise.complete.obs")), type = "latex", size="\\fontsize{4pt}{2pt}\\selectfont")
 ```
 
 Vi kombinerar helt enkelt dessa variabler istället för att göra en modell åt varje, även fast de kan ha mindre skillnader.
 
 
 Nu gör vi en korrelationsmatris utav dessa numeriska variabler.
-```{r, echo=FALSE,results="asis"}
-print(xtable(cor(cars_numeric, use = "pairwise.complete.obs")), type = "latex", size="\\fontsize{4pt}{2pt}\\selectfont")
+```{r, echo=FALSE}
+cor(cars_numeric, use = "pairwise.complete.obs")
 ```
 
 *Figur 2: Korrelationsmatris på data som endast är numerisk och relevant* 
@@ -175,20 +175,27 @@ pairs(badboys)
 
 Av denna figur kan vi inte riktigt avgöra om variablerna bör vara med i modellen eller ej, så vi har kvar dem och utför yttligare tester.
 
-## Variabelselektion - forward och backward
+### Variabelselektion - forward och backward
 
 ```{r, echo=FALSE, include = FALSE}
 model1 <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + cylinders + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
 
 
+```
+
+
+```{r}
 summary(model1)
 ```
 
 *Figur 4: Sammanfattning av vår modell med variabler utvalda av forward - och backward selection *
 
+
+# Konstruktion av modell
+
 Vår modell sammanfattas av figur 4. Finns det problem med multikolinearitet?
 
-```{r, echo=FALSE}
+```{r}
 vif(model1)
 ```
 
@@ -209,7 +216,7 @@ summary(model2)
 
 Figur 6 visar att vi får betydligt högre säkerhet i skattningarna på några av dess parametrar. Detta är typiskt för problem med multikolinearitet. Det finns fortfarande en viss osäkerhet i vissa parametrar, kan detta lösas genom att även ta bort width variablen?
 
-```{r, echo=FALSE}
+```{r}
 vif(model2)
 ```
 
@@ -230,7 +237,7 @@ summary(model3)
 
 Modellen har relativt okej R²-värde, och alla lutningskoefficienter förutom den för domestic har goda t-värden. Detta tyder på att vi inte längre har lika starka multikollinearitet-problem som vi hade tidigare. 
 
-```{r, echo=FALSE}
+```{r}
 vif(model3)
 ```
 
@@ -238,6 +245,8 @@ vif(model3)
 Enligt våra VIF-värden så har vi inte längre några problem med kolinearitet. 
 
 **Värt att notera:** Det är egentligen inte viktigt att intercept har hög säkerhet för vår modell. Detta eftersom att det är inte meningsfullt att tänka sig vad en bil med 0 i alla värden har för bränsleförbrukning. I vår modell har denna hypotetiska bil en bränsleförbrukning på 25.23, vilket är mer än vad vi förväntar oss av en bil utan säten eller bränsletank och med 0 rpm. 
+
+## Residylanalys och outliers
 
 Vi undersöker residualer och möjliga outliers med nedanstående plottar.
 
@@ -251,7 +260,7 @@ plot(model3)
 
 Observationerna 39 och 42 ligger precis innanför Cook's distance. När vi tittar på vår QQ-plot så ser vi att även här så orsakar 39 och 42 trubbel, och gör även att variansen för residylerna inte blir lika normalfördelat som det annars skulle vara. 
 
-```{r, , echo=FALSE}
+```{r}
 cars[c(39,42), ]
 ```
 
@@ -310,9 +319,10 @@ plot(model4)
 
 Residylerna till vår nya modell ser genast mycket bättre ut på figur 11, och vi får även aningen bättre R²-värde på figur 12.
 
-# Konstruktion av modell
 
 ## MSEP
+
+Hur är vår modells prediktiva förmåga? Vi jämför den med en modell som endast har weight, och en modell som är som vår slutgiltiga fast med weight.
 
 ```{r, echo=FALSE}
 MSEP(c("width"), cars)
@@ -322,24 +332,13 @@ MSEP(c( "wheelbase", "fueltankcap", "passcap",
 
 ```
 
+Eftersom att ett lågt MSEP-värde är ett tecken på bra prediktiv förmåga så kan vi säga att vår slutgiltiga modell är bättre än en modell med endast weight. Däremot är den aningen sämre än vår slutgiltiga modell fast med weight. Vi anser att det fortfarande inte är värt att inkludera weight eftersom att modellen får problem i skattningen av lutningskoefficienterna.
 
 # Jämförelse av amerikanska - och icke-amerikanska bilar
 
 
 I modell 4 kan vi notera att variabeln "domestic" har ett $p$-värde på $0.39062$. Eftersom detta är baserat på en nollhypotes där koefficienten för domestic antas vara noll så ser vi att koefficientens värde, nämligen $-0.538925$, inte alls är signifikant skilt från noll, förutsatt att alla antaganden för en multilinjär modell är uppfyllda förstås. I detta fal kan vi då av datat dra slutsatsen att bränsleförbrukningen inte påverkas märkbart av att bilen är amerikansk eller inte.
 
-# Resultat
-
-I sammanfattningen för modell 4, samt tillhörande plot, kan man se att medianen ligger nära noll och att kvartilerna ligger tillfredställande symmetriska omkring medianen. Vid första anblick ser datat lite "böjt" ut men inte tillräckligt för att dra några säkra slutsatser om krökning. För säkerhetens skull kan vi kolla om residualerna är normalfördelade i en plot nedanför. Det ser helt okej ut.
-
-Residualerna verkar bli mer spridda vid prediktioner av större värden av bensinförbrukning, vilket kan indikera heteroskedasticitet, men igen, inte så extremt att vi kan dra säkra slutsatser.
-
-```{r,fig.width= 15 , echo=FALSE}
-par(mfrow=c(1,3))
-plot(model4 , which = c(1,2))
-hist(residuals(model4), breaks = 15)
-summary(model4)
-```
 
 # Referens
 
