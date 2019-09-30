@@ -36,6 +36,7 @@ MSEP <- function(factors, dt) {
   sqsum <- 0
   N <- dim(dt)[1]
   
+  
   for (i in 1:N) {
     
     excluded_obs <- dt[i,]
@@ -176,11 +177,18 @@ Av denna figur kan vi inte riktigt avgöra om variablerna bör vara med i modell
 
 ## Variabelselektion - forward och backward
 
+Eftersom vi har ett stort antal variabler att välja bland för att bygga upp våran modell utför vi både *forward selection* och *backward elimination*. De variabler vi utför detta på omfattar all förutom de kategoriska och de som saknar data i vissa punkter. Vad vi får ut är en modell som har elimenerat ett stort antal av våra förklarande variabler.
+
 ```{r, echo=FALSE}
 model1 <- step(lm(mpg~1), scope=(~minprice + midprice + maxprice + enginesize + horsepower + rpm + enginerev + fueltankcap + passcap + cylinders + lencar + wheelbase + width + Uturn + rearseatroom + weight + domestic), direction="both")
 
-
 summary(model1)
+
+```
+
+**VIF av den framtagna modellen:**
+
+```{r}
 vif(model1)
 ```
 
