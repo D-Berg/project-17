@@ -3,12 +3,12 @@ title: "Övningsuppgift A - analys av bränsledata"
 author: "Per Idenfeldt, Oliver Grahn Thuna, Daniel Berg, Gabriel Junhager"
 date: "9/30/2019"
 output:
-  html_document: default
   pdf_document: 
     latex_engine: lualatex
     toc: true
     toc_depth: 3
     number_sections: true
+  html_document: default
 ---
 
 
@@ -188,7 +188,7 @@ summary(model1)
 
 Vår modell sammanfattas av figur 4. Finns det problem med multikolinearitet?
 
-```{r}
+```{r, echo=FALSE}
 vif(model1)
 ```
 
@@ -209,7 +209,7 @@ summary(model2)
 
 Figur 6 visar att vi får betydligt högre säkerhet i skattningarna på några av dess parametrar. Detta är typiskt för problem med multikolinearitet. Det finns fortfarande en viss osäkerhet i vissa parametrar, kan detta lösas genom att även ta bort width variablen?
 
-```{r}
+```{r, echo=FALSE}
 vif(model2)
 ```
 
@@ -230,7 +230,7 @@ summary(model3)
 
 Modellen har relativt okej R²-värde, och alla lutningskoefficienter förutom den för domestic har goda t-värden. Detta tyder på att vi inte längre har lika starka multikollinearitet-problem som vi hade tidigare. 
 
-```{r}
+```{r, echo=FALSE}
 vif(model3)
 ```
 
@@ -251,7 +251,7 @@ plot(model3)
 
 Observationerna 39 och 42 ligger precis innanför Cook's distance. När vi tittar på vår QQ-plot så ser vi att även här så orsakar 39 och 42 trubbel, och gör även att variansen för residylerna inte blir lika normalfördelat som det annars skulle vara. 
 
-```{r}
+```{r, , echo=FALSE}
 cars[c(39,42), ]
 ```
 
@@ -327,3 +327,7 @@ MSEP(c( "wheelbase", "fueltankcap", "passcap",
 
 
 I modell 4 kan vi notera att variabeln "domestic" har ett $p$-värde på $0.39062$. Eftersom detta är baserat på en nollhypotes där koefficienten för domestic antas vara noll så ser vi att koefficientens värde, nämligen $-0.538925$, inte alls är signifikant skilt från noll, förutsatt att alla antaganden för en multilinjär modell är uppfyllda förstås. I detta fal kan vi då av datat dra slutsatsen att bränsleförbrukningen inte påverkas märkbart av att bilen är amerikansk eller inte.
+
+# Referens
+
+Formula with dynamic number of variables: https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
