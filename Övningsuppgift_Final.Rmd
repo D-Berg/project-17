@@ -15,6 +15,9 @@ output:
 
 # Introduktion
 
+Denna rapport syftar till att utifrån de två datasetten *"Consumer Reports: The 1993 Cars - Annual Auto Issue_, Yonkers, NY: Consumers Union"* samt *"PACE New Car & Truck 1993 Buying Guide_ (1993), Milwaukee, WI: Pace Publ. Inc"* bygga en modell om bilars bensinförbrukning.
+Detta görs genom att välja lämpliga variabler med hjälp av statistika metoder som stegvis variabelselektion. Efter detta byggs en modell med hjälp av multipel linjär regression och dess prediktiva förmåga analyseras tillsammans med frågan om amerikanska bilar och icke-amerikanska bilars bränsleförbrukning skiljer sig på ett signifikant sätt.
+
 # Variabelselektion
 
 Vi börjar med att undersöka data som är icke-kategorisk, annat data undersöks senare.
