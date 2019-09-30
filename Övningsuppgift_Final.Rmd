@@ -1,7 +1,7 @@
 ---
-title: "Untitled"
+title: "Övningsuppgift A - analys av bränsledata för bilar"
 author: "Per Idenfeldt, Oliver Grahn Thuna, Daniel Berg, Gabriel Junhager"
-date: "9/25/2019"
+date: "9/30/2019"
 output:
   pdf_document: 
     latex_engine: lualatex
@@ -291,6 +291,5 @@ MSEP(c( "wheelbase", "fueltankcap", "passcap",
 
 # Jämförelse av amerikanska - och icke-amerikanska bilar
 
-
-
+I modell 4 kan vi notera att variabeln "domestic" har ett $p$-värde på $0.39062$. Eftersom detta är baserat på en nollhypotes där koefficienten för domestic antas vara noll så ser vi att koefficientens värde, nämligen $-0.538925$, inte alls är signifikant skilt från noll, förutsatt att alla antaganden för en multilinjär modell är uppfyllda förstås. I detta fal kan vi då av datat dra slutsatsen att bränsleförbrukningen inte påverkas märkbart av att bilen är amerikansk eller inte.
 
