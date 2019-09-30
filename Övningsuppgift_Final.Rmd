@@ -16,12 +16,12 @@ output:
 
 Vi börjar med att undersöka data som är icke-kategorisk, annat data undersöks senare.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 library(caret)
 library(car)
 library(olsrr)
 library(psych)
-cars <- read.table("A17-cars-lnx.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
+cars <- read.table("A17-cars-win.dat", header = FALSE, col.names=c("manufacturer","model","type","minprice","midprice","maxprice", "cmpg", "hmpg", "airbags", "drivetrain", "cylinders", "enginesize", "horsepower", "rpm", "enginerev", "manualtransmissions", "fueltankcap", "passcap", "lencar", "wheelbase", "width", "Uturn", "rearseatroom", "luggagecap", "weight", "domestic"))
 ```
 
 
